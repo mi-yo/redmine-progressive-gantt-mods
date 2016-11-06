@@ -142,6 +142,58 @@
 
 <table style="width:100%; border:0; border-collapse: collapse;">
 <tr>
+<%
+ line_number_width = @gantt.number_of_rows.to_s.length * 8 + 8
+%>
+<td style="width:<%= line_number_width %>px; padding:0px;">
+  <%
+    style  = ""
+    style += "position:relative;"
+    style += "height: #{t_height + 24}px;"
+    style += "width: #{line_number_width + 1}px;"
+  %>
+  <%= content_tag(:div, :style => style) do %>
+    <%
+      style  = ""
+      style += "right: -2px;"
+      style += "width: #{line_number_width}px;"
+      style += "height: #{headers_height}px;"
+      style += "line-height: #{headers_height}px;"
+      style += "font-size:0.9em;"
+      style += 'background: #eee;'
+    %>
+    <%= content_tag(:div, "LN", :style => style, :class => "gantt_hdr") %>
+    <%
+      style  = ""
+      style += "right: -2px;"
+      style += "width: #{line_number_width}px;"
+      style += "height: #{t_height}px;"
+      style += 'border-left: 1px solid #c0c0c0;'
+      style += 'overflow: hidden;'
+    %>
+    <%= content_tag(:div, "", :style => style, :class => "gantt_hdr") %>
+    <%
+      top = headers_height + 9
+      line_number = 1
+    %>
+    <% @gantt.number_of_rows.times do %>
+      <%
+        style  = ""
+        style += "right: +4px;"
+        style += "top: #{top}px;"
+        style += "position: absolute;"
+      %>
+      <%= content_tag(:div, :style => style, :class => "gantt_subjects") do %>
+        <%= line_number %>
+      <% end %>
+      <%
+        top = top + 20
+        line_number = line_number + 1
+      %>
+    <% end %>
+  <% end %>
+</td>
+
 <td style="width:<%= subject_width %>px; padding:0px;">
   <%
     style  = ""
