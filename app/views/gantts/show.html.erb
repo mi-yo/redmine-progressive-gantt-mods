@@ -342,6 +342,8 @@
       clss = "gantt_hdr"
       clss << " nwday" if @gantt.non_working_week_days.include?(wday)
     %>
+    <% if wday == 6 %><% style += "color:blue;" %><% end %>
+    <% if wday == 7 %><% style += "color:red;" %><% end %>
     <%= content_tag(:div, :style => style, :class => clss) do %>
       <%= day_letter(wday) %>
     <% end %>
