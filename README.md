@@ -6,7 +6,7 @@ Assignee column and some preferences for Gantt chart.
 ![Progressive Gantt Mods Screenshot](http://stgeneral.github.io/redmine-progressive-gantt-mods/images/progressive_gantt_mods-screen-en.png)
 
 
-Compatible with [Redmine](http://www.redmine.org/) 2.4.
+Compatible with [Redmine](http://www.redmine.org/) 3.3.1.
 
 Other Proressive plugins for Redmine
 ------------------------------------
