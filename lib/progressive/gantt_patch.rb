@@ -6,43 +6,31 @@ module Progressive::GanttPatch
         @assignees = ''
       end
 
-      def render_issues_with_assignees(issues, options={})
-        @issue_ancestors = []
-        issues.each do |i|
-          subject_for_issue(i, options) unless options[:only] == :lines
-          assignee_for_issue(i, options)
-          line_for_issue(i, options) unless options[:only] == :subjects
-          options[:top] += options[:top_increment]
-          @number_of_rows += 1
-          break if abort?
+      def render_object_row_with_assignees(object, options)
+        class_name = object.class.name.downcase
+        send("subject_for_#{class_name}", object, options) unless options[:only] == :lines
+        send("assignee_for_#{class_name}", object, options) unless "#{class_name}" != "issue"
+        send("line_for_#{class_name}", object, options) unless options[:only] == :subjects
+        options[:top] += options[:top_increment]
+        @number_of_rows += 1
+        if @max_rows && @number_of_rows >= @max_rows
+          raise MaxLinesLimitReached
         end
-        options[:indent] -= (options[:indent_increment] * @issue_ancestors.size)
       end
 
       def line_for_issue_with_subject(issue, options)
+        # Skip issues that don't have a due_before (due_date or version's due_date)
         if issue.is_a?(Issue) && (issue.due_before || options[:show_subject_lines])
-          coords = coordinates(issue.start_date, issue.due_before, issue.done_ratio, options[:zoom])
           label = "#{issue.status.name} #{issue.done_ratio}%"
-          case options[:format]
-          when :html
-            label += " - #{issue.subject}" if options[:show_subject_lines]
-            html_task(options, coords,
-                      :css => "task " + (issue.leaf? ? 'leaf' : 'parent'),
-                      :label => label, :issue => issue,
-                      :markers => !issue.leaf?)
-          when :image
-            image_task(options, coords, :label => label)
-          when :pdf
-            pdf_task(options, coords, :label => label)
-        end
-        else
-          ''
+          label += " - #{issue.subject}" if options[:show_subject_lines]
+          markers = !issue.leaf?
+          line(issue.start_date, issue.due_before, issue.done_ratio, markers, label, options, issue)
         end
       end
 
-      alias_method_chain :initialize,     :assignees
-      alias_method_chain :render_issues,  :assignees
-      alias_method_chain :line_for_issue, :subject
+      alias_method_chain :initialize,        :assignees
+      alias_method_chain :render_object_row, :assignees
+      alias_method_chain :line_for_issue,    :subject
 
       # Renders the subjects of the Gantt chart, the left side.
       def assignees(options={})
